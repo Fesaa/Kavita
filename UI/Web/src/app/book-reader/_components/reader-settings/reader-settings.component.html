@@ -160,7 +160,7 @@
                 <ng-container *ngFor="let theme of themes">
                   <button class="btn btn-icon color" (click)="setTheme(theme.name)" [ngClass]="{'active': activeTheme?.name === theme.name}">
                     <div class="dot" [ngStyle]="{'background-color': theme.colorHash}"></div>
-                    {{t(theme.translationKey)}}
+                    {{theme.name}}
                   </button>
                 </ng-container>
               </div>

@@ -26,6 +26,8 @@ import {SiteThemeUpdatedEvent} from "../_models/events/site-theme-updated-event"
 import {NavigationEnd, Router} from "@angular/router";
 import {ColorscapeService} from "./colorscape.service";
 import {ColorScape} from "../_models/theme/colorscape";
+import {BookTheme} from "../_models/preferences/book-theme";
+import {AccountService} from "./account.service";
 
 @Injectable({
   providedIn: 'root'
@@ -271,5 +273,25 @@ export class ThemeService {
 
   private unsetBookThemes() {
     Array.from(this.document.body.classList).filter(cls => cls.startsWith('brtheme-')).forEach(c => this.document.body.classList.remove(c));
+  }
+
+  getBookThemes() {
+    return this.httpClient.get<Array<BookTheme>>(this.baseUrl + "booktheme/all");
+  }
+
+  public fetchBookThemeContent(bookThemeId: number) {
+    return this.httpClient.get<string>(this.baseUrl + `booktheme?bookThemeId=${bookThemeId}`, TextResonse).pipe(map(encodedCss => {
+      return this.domSanitizer.sanitize(SecurityContext.STYLE, encodedCss);
+    }));
+  }
+
+  uploadFont(fontFile: File, fileEntry: NgxFileDropEntry) {
+    const formData = new FormData();
+    formData.append('formFile', fontFile, fileEntry.relativePath);
+    return this.httpClient.post<BookTheme>(this.baseUrl + "booktheme/upload", formData);
+  }
+
+  deleteBookTheme(id: number, force: boolean = false) {
+    return this.httpClient.delete(this.baseUrl + `booktheme?bookThemeId=${id}&force=${force}`);
   }
 }

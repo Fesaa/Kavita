@@ -14,11 +14,9 @@ import {
   scalingOptions
 } from "../../_models/preferences/preferences";
 import {AccountService} from "../../_services/account.service";
-import {BookService} from "../../book-reader/_services/book.service";
 import {Title} from "@angular/platform-browser";
 import {Router} from "@angular/router";
 import {LocalizationService} from "../../_services/localization.service";
-import {bookColorThemes} from "../../book-reader/_components/reader-settings/reader-settings.component";
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {User} from "../../_models/user";
 import {Language} from "../../_models/metadata/language";
@@ -54,6 +52,8 @@ import {PdfThemePipe} from "../../_pipes/pdf-theme.pipe";
 import {PdfScrollModeTypePipe} from "../../pdf-reader/_pipe/pdf-scroll-mode.pipe";
 import {PdfScrollModePipe} from "../../_pipes/pdf-scroll-mode.pipe";
 import {FontService} from "../../_services/font.service";
+import {BookTheme} from "../../_models/preferences/book-theme";
+import {ThemeService} from "../../_services/theme.service";
 
 @Component({
   selector: 'app-manga-user-preferences',
@@ -99,6 +99,7 @@ export class ManageUserPreferencesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly accountService = inject(AccountService);
   private readonly fontService = inject(FontService);
+  private readonly themeService = inject(ThemeService);
   private readonly titleService = inject(Title);
   private readonly router = inject(Router);
   private readonly cdRef = inject(ChangeDetectorRef);
@@ -115,12 +116,7 @@ export class ManageUserPreferencesComponent implements OnInit {
   protected readonly pdfThemes = pdfThemes;
   protected readonly pdfScrollModes = pdfScrollModes;
 
-  bookColorThemesTranslated = bookColorThemes.map(o => {
-    const d = {...o};
-    d.name = translate('theme.' + d.translationKey);
-    return d;
-  });
-
+  bookThemes: Array<BookTheme> = [];
 
   fontFamilies: Array<string> = [];
   locales: Array<Language> = [{title: 'English', isoCode: 'en'}];
@@ -138,7 +134,12 @@ export class ManageUserPreferencesComponent implements OnInit {
     this.fontService.getFonts().subscribe(fonts => {
       this.fontFamilies = fonts.map(f => f.name);
       this.cdRef.markForCheck();
-    })
+    });
+
+    this.themeService.getBookThemes().subscribe(themes => {
+      this.bookThemes = themes;
+      this.cdRef.markForCheck();
+    });
 
     this.localizationService.getLocales().subscribe(res => {
       this.locales = res;
@@ -184,7 +185,7 @@ export class ManageUserPreferencesComponent implements OnInit {
       this.settingsForm.addControl('bookReaderWritingStyle', new FormControl(this.user.preferences.bookReaderWritingStyle, []))
       this.settingsForm.addControl('bookReaderTapToPaginate', new FormControl(this.user.preferences.bookReaderTapToPaginate, []));
       this.settingsForm.addControl('bookReaderLayoutMode', new FormControl(this.user.preferences.bookReaderLayoutMode || BookPageLayoutMode.Default, []));
-      this.settingsForm.addControl('bookReaderThemeName', new FormControl(this.user?.preferences.bookReaderThemeName || bookColorThemes[0].name, []));
+      this.settingsForm.addControl('bookReaderThemeName', new FormControl(this.user?.preferences.bookReaderThemeName || this.bookThemes[0].name, []));
       this.settingsForm.addControl('bookReaderImmersiveMode', new FormControl(this.user?.preferences.bookReaderImmersiveMode, []));
 
       this.settingsForm.addControl('pdfTheme', new FormControl(this.user?.preferences.pdfTheme || PdfTheme.Dark, []));
@@ -256,7 +257,7 @@ export class ManageUserPreferencesComponent implements OnInit {
     this.settingsForm.get('bookReaderWritingStyle')?.setValue(this.user.preferences.bookReaderWritingStyle, {onlySelf: true, emitEvent: false});
     this.settingsForm.get('bookReaderTapToPaginate')?.setValue(this.user.preferences.bookReaderTapToPaginate, {onlySelf: true, emitEvent: false});
     this.settingsForm.get('bookReaderLayoutMode')?.setValue(this.user.preferences.bookReaderLayoutMode || BookPageLayoutMode.Default, {onlySelf: true, emitEvent: false});
-    this.settingsForm.get('bookReaderThemeName')?.setValue(this.user?.preferences.bookReaderThemeName || bookColorThemes[0].name, {onlySelf: true, emitEvent: false});
+    this.settingsForm.get('bookReaderThemeName')?.setValue(this.user?.preferences.bookReaderThemeName || this.bookThemes[0].name, {onlySelf: true, emitEvent: false});
     this.settingsForm.get('bookReaderImmersiveMode')?.setValue(this.user?.preferences.bookReaderImmersiveMode, {onlySelf: true, emitEvent: false});
 
     this.settingsForm.get('pdfTheme')?.setValue(this.user?.preferences.pdfTheme || PdfTheme.Dark, {onlySelf: true, emitEvent: false});

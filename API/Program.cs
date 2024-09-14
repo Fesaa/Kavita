@@ -127,6 +127,7 @@ public class Program
                 await Seed.SeedSettings(context, directoryService);
                 await Seed.SeedThemes(context);
                 await Seed.SeedFonts(context);
+                await Seed.SeedBookThemes(context);
                 await Seed.SeedDefaultStreams(unitOfWork);
                 await Seed.SeedDefaultSideNavStreams(unitOfWork);
                 await Seed.SeedUserApiKeys(context);

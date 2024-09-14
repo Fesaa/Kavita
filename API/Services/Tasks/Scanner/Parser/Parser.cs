@@ -1261,6 +1261,9 @@ public static class Parser
         return filename;
     }
 
+    // TODO: This is not also being used to pretty fine book theme names, these were translated in the past
+    // Should we update this to be more kind to non latin alphabets?
+    // Also, TODO: Add tests
     /**
      * Replaced non-alphanumerical chars with a space
      */

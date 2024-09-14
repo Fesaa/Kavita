@@ -41,48 +41,12 @@ export interface PageStyle {
   'margin-right': string;
 }
 
-export const bookColorThemes = [
-  {
-    name: 'Dark',
-    colorHash: '#292929',
-    isDarkTheme: true,
-    isDefault: true,
-    provider: ThemeProvider.System,
-    selector: 'brtheme-dark',
-    content: BookDarkTheme,
-    translationKey: 'theme-dark'
-  },
-  {
-    name: 'Black',
-    colorHash: '#000000',
-    isDarkTheme: true,
-    isDefault: false,
-    provider: ThemeProvider.System,
-    selector: 'brtheme-black',
-    content: BookBlackTheme,
-    translationKey: 'theme-black'
-  },
-  {
-    name: 'White',
-    colorHash: '#FFFFFF',
-    isDarkTheme: false,
-    isDefault: false,
-    provider: ThemeProvider.System,
-    selector: 'brtheme-white',
-    content: BookWhiteTheme,
-    translationKey: 'theme-white'
-  },
-  {
-    name: 'Paper',
-    colorHash: '#F1E4D5',
-    isDarkTheme: false,
-    isDefault: false,
-    provider: ThemeProvider.System,
-    selector: 'brtheme-paper',
-    content: BookPaperTheme,
-    translationKey: 'theme-paper'
-  },
-];
+export const systemBookThemes: { [key: string]: string } = {
+  "Dark": BookDarkTheme,
+  "Black": BookBlackTheme,
+  "White": BookWhiteTheme,
+  "Paper": BookPaperTheme
+}
 
 const mobileBreakpointMarginOverride = 700;
 const defaultFontFamily = 'Default';
@@ -153,7 +117,7 @@ export class ReaderSettingsComponent implements OnInit {
   /**
    * System provided themes
    */
-  themes: Array<BookTheme> = bookColorThemes;
+  themes: Array<BookTheme> = [];
   private readonly destroyRef = inject(DestroyRef);
 
 
@@ -259,7 +223,11 @@ export class ReaderSettingsComponent implements OnInit {
         });
 
 
-        this.setTheme(this.user.preferences.bookReaderThemeName || this.themeService.defaultBookTheme);
+        this.themeService.getBookThemes().subscribe(bookThemes => {
+          this.themes = bookThemes;
+          this.setTheme(this.user.preferences.bookReaderThemeName || this.themeService.defaultBookTheme);
+          this.cdRef.markForCheck();
+        });
         this.cdRef.markForCheck();
 
         // Emit first time so book reader gets the setting

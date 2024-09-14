@@ -335,7 +335,7 @@
             <ng-template #edit>
               <select class="form-select" aria-describedby="book-reader-heading"
                       formControlName="bookReaderThemeName">
-                @for (opt of bookColorThemesTranslated; track opt) {
+                @for (opt of bookThemes; track opt) {
                   <option [value]="opt.name">{{opt.name | titlecase}}</option>
                 }
               </select>

@@ -119,6 +119,55 @@ public static class Seed
         }
     ];
 
+    public static readonly ImmutableArray<BookTheme> DefaultBookThemes = ImmutableArray.Create(
+        new List<BookTheme>
+        {
+            new()
+            {
+                Name = "Dark",
+                NormalizedName = Parser.Normalize("Dark"),
+                Provider = ThemeProvider.System,
+                FileName = string.Empty,
+                IsDefault = true,
+                ColorHash = "#292929",
+                Selector = "brtheme-dark",
+                IsDarkTheme = true,
+            },
+            new ()
+            {
+                Name = "Black",
+                NormalizedName = Parser.Normalize("Black"),
+                Provider = ThemeProvider.System,
+                FileName = string.Empty,
+                IsDefault = false,
+                ColorHash = "#000000",
+                Selector = "brtheme-black",
+                IsDarkTheme = true,
+            },
+            new ()
+            {
+                Name = "White",
+                NormalizedName = Parser.Normalize("White"),
+                Provider = ThemeProvider.System,
+                FileName = string.Empty,
+                IsDefault = false,
+                ColorHash = "#FFFFFF",
+                Selector = "brtheme-white",
+                IsDarkTheme = false,
+            },
+            new ()
+            {
+                Name = "Paper",
+                NormalizedName = Parser.Normalize("Paper"),
+                Provider = ThemeProvider.System,
+                FileName = string.Empty,
+                IsDefault = false,
+                ColorHash = "#F1E4D5",
+                Selector = "brtheme-paper",
+                IsDarkTheme = false,
+            }
+        }.ToArray());
+
     public static readonly ImmutableArray<SiteTheme> DefaultThemes = [
         ..new List<SiteTheme>
         {
@@ -256,6 +305,22 @@ public static class Seed
             if (existing == null)
             {
                 await context.EpubFont.AddAsync(font);
+            }
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    public static async Task SeedBookThemes(DataContext context)
+    {
+        await context.Database.EnsureCreatedAsync();
+
+        foreach (var theme in DefaultBookThemes)
+        {
+            var existing = await context.BookTheme.FirstOrDefaultAsync(s => s.Name.Equals(theme.Name));
+            if (existing == null)
+            {
+                await context.BookTheme.AddAsync(theme);
             }
         }
 

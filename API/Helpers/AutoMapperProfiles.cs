@@ -264,6 +264,7 @@ public class AutoMapperProfiles : Profile
                     opt.MapFrom(src => src.BookReaderLayoutMode));
 
         CreateMap<EpubFont, EpubFontDto>();
+        CreateMap<BookTheme, BookThemeDto>();
 
 
         CreateMap<AppUserBookmark, BookmarkDto>();

@@ -54,6 +54,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IRecommendationService, RecommendationService>();
         services.AddScoped<IStreamService, StreamService>();
         services.AddScoped<IFontService, FontService>();
+        services.AddScoped<IBookThemeService, BookThemeService>();
 
         services.AddScoped<IScannerService, ScannerService>();
         services.AddScoped<IMetadataService, MetadataService>();

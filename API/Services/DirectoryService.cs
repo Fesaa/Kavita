@@ -35,6 +35,7 @@ public interface IDirectoryService
     /// </summary>
     string BookmarkDirectory { get; }
     string EpubFontDirectory { get; }
+    string BookThemeDirectory { get; }
     /// <summary>
     /// Lists out top-level folders for a given directory. Filters out System and Hidden folders.
     /// </summary>
@@ -92,6 +93,8 @@ public class DirectoryService : IDirectoryService
     public string TemplateDirectory { get; }
     public string PublisherDirectory { get; }
     public string EpubFontDirectory { get; }
+    public string BookThemeDirectory { get; }
+
 
     private readonly ILogger<DirectoryService> _logger;
     private const RegexOptions MatchOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
@@ -134,6 +137,8 @@ public class DirectoryService : IDirectoryService
         ExistOrCreate(PublisherDirectory);
         EpubFontDirectory = FileSystem.Path.Join(FileSystem.Directory.GetCurrentDirectory(), "config", "fonts");
         ExistOrCreate(EpubFontDirectory);
+        BookThemeDirectory = FileSystem.Path.Join(FileSystem.Directory.GetCurrentDirectory(), "config", "themes", "book");
+        ExistOrCreate(BookThemeDirectory);
     }
 
     /// <summary>

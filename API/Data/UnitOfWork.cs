@@ -32,6 +32,7 @@ public interface IUnitOfWork
     IAppUserExternalSourceRepository AppUserExternalSourceRepository { get; }
     IExternalSeriesMetadataRepository ExternalSeriesMetadataRepository { get; }
     IEpubFontRepository EpubFontRepository { get; }
+    IBookThemeRepository BookThemeRepository { get; }
     bool Commit();
     Task<bool> CommitAsync();
     bool HasChanges();
@@ -76,7 +77,7 @@ public class UnitOfWork : IUnitOfWork
     public IAppUserExternalSourceRepository AppUserExternalSourceRepository => new AppUserExternalSourceRepository(_context, _mapper);
     public IExternalSeriesMetadataRepository ExternalSeriesMetadataRepository => new ExternalSeriesMetadataRepository(_context, _mapper);
     public IEpubFontRepository EpubFontRepository => new EpubFontRepository(_context, _mapper);
-
+    public IBookThemeRepository BookThemeRepository => new BookThemeRepository(_context, _mapper);
     /// <summary>
     /// Commits changes to the DB. Completes the open transaction.
     /// </summary>

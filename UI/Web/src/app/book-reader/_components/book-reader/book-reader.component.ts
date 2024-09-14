@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component, DestroyRef,
-  ElementRef, EventEmitter,
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
   HostListener,
   inject,
   Inject,
@@ -13,11 +15,11 @@ import {
   RendererStyleFlags2,
   ViewChild
 } from '@angular/core';
-import { DOCUMENT, NgTemplateOutlet, NgIf, NgStyle, NgClass } from '@angular/common';
+import { DOCUMENT, NgClass, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, fromEvent, of } from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, map, take, tap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, take, tap} from 'rxjs/operators';
 import { Chapter } from 'src/app/_models/chapter';
 import { AccountService } from 'src/app/_services/account.service';
 import { NavService } from 'src/app/_services/nav.service';
@@ -37,14 +39,23 @@ import { LibraryService } from 'src/app/_services/library.service';
 import { LibraryType } from 'src/app/_models/library/library';
 import { BookTheme } from 'src/app/_models/preferences/book-theme';
 import { BookPageLayoutMode } from 'src/app/_models/readers/book-page-layout-mode';
-import { PageStyle, ReaderSettingsComponent } from '../reader-settings/reader-settings.component';
+import { PageStyle, ReaderSettingsComponent, systemBookThemes } from '../reader-settings/reader-settings.component';
 import { User } from 'src/app/_models/user';
 import { ThemeService } from 'src/app/_services/theme.service';
 import { ScrollService } from 'src/app/_services/scroll.service';
 import { PAGING_DIRECTION } from 'src/app/manga-reader/_models/reader-enums';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { TableOfContentsComponent } from '../table-of-contents/table-of-contents.component';
-import { NgbProgressbar, NgbNav, NgbNavItem, NgbNavItemRole, NgbNavLink, NgbNavContent, NgbNavOutlet, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbNav,
+  NgbNavContent,
+  NgbNavItem,
+  NgbNavItemRole,
+  NgbNavLink,
+  NgbNavOutlet,
+  NgbProgressbar,
+  NgbTooltip
+} from '@ng-bootstrap/ng-bootstrap';
 import { DrawerComponent } from '../../../shared/drawer/drawer.component';
 import {BookLineOverlayComponent} from "../book-line-overlay/book-line-overlay.component";
 import {
@@ -53,6 +64,7 @@ import {
 } from "../personal-table-of-contents/personal-table-of-contents.component";
 import {translate, TranslocoDirective} from "@jsverse/transloco";
 import {FontService} from "../../../_services/font.service";
+import { ThemeProvider } from "../../../_models/preferences/site-theme";
 
 
 enum TabID {
@@ -1354,14 +1366,24 @@ export class BookReaderComponent implements OnInit, AfterViewInit, OnDestroy {
   updateColorTheme(theme: BookTheme) {
     // Remove all themes
     Array.from(this.document.querySelectorAll('style[id^="brtheme-"]')).forEach(elem => elem.remove());
-
     this.darkMode = theme.isDarkTheme;
 
+    if (theme.provider === ThemeProvider.System) {
+      this.setBookThemeContent(theme, systemBookThemes[theme.name])
+      return;
+    }
+
+    this.themeService.fetchBookThemeContent(theme.id).subscribe(content => {
+      if (content) {
+        this.setBookThemeContent(theme, content)
+      }
+    })
+  }
+
+  private setBookThemeContent(theme: BookTheme, content: string) {
     const styleElem = this.renderer.createElement('style');
     styleElem.id = theme.selector;
-    styleElem.innerHTML = theme.content;
-
-
+    styleElem.innerHTML = content;
     this.renderer.appendChild(this.document.querySelector('.reading-section'), styleElem);
     // I need to also apply the selector onto the body so that any css variables will take effect
     this.themeService.setBookTheme(theme.selector);
