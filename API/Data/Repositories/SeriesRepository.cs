@@ -1843,7 +1843,9 @@ public class SeriesRepository : ISeriesRepository
         foreach (var parsedSeries in seenSeries)
         {
             var matchingSeries = dbSeries
-                .Where(s => s.Format == parsedSeries.Format && s.NormalizedName == parsedSeries.NormalizedName)
+                .Where(s => s.Format == parsedSeries.Format)
+                .Where(s => s.NormalizedName == parsedSeries.NormalizedName ||
+                            s.OriginalName.ToNormalized() == parsedSeries.NormalizedName)
                 .OrderBy(s => s.Id) // Sort to handle potential duplicates
                 .ToList();
 

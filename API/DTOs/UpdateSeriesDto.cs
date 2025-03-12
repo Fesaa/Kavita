@@ -3,6 +3,7 @@
 public class UpdateSeriesDto
 {
     public int Id { get; init; }
+    public string? Name { get; init; }
     public string? LocalizedName { get; init; }
     public string? SortName { get; init; }
     public bool CoverImageLocked { get; set; }

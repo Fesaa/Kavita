@@ -218,6 +218,11 @@ public class SeriesController : BaseApiController
         if (series == null)
             return BadRequest(await _localizationService.Translate(User.GetUserId(), "series-doesnt-exist"));
 
+        if (!string.IsNullOrEmpty(updateSeries.Name?.Trim()))
+        {
+            series.Name = updateSeries.Name.Trim();
+        }
+
         series.NormalizedName = series.Name.ToNormalized();
         if (!string.IsNullOrEmpty(updateSeries.SortName?.Trim()))
         {
